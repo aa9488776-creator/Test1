@@ -155,23 +155,3 @@
                         "Content-Type": "application/json",
                         "Accept": "application/json"
                     },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    document.getElementById('formContent').style.display = 'none';
-                    document.getElementById('successMessage').style.display = 'block';
-                } else {
-                    showError("حدث خطأ أثناء إرسال البيانات، حاول مرة أخرى.");
-                }
-            } catch (error) {
-                console.error("خطأ في الإرسال:", error);
-                showError("تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.");
-            } finally {
-                submitBtn.innerHTML = 'انضم لقائمة المستفيدين المبكرين! 🎁';
-                submitBtn.disabled = false;
-            }
-        });
-    </script>
-</body>
-</html>
