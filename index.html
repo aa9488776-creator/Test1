@@ -1,0 +1,177 @@
+	<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كن من أوائل المستفيدين! - LuxeAura</title>
+    <style>
+        /* ... (نفس الستايل اللي عندك، ما عدلت عليه) ... */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">✨ LuxeAura ✨</div>
+            <h1 class="title">كن من أوائل المستفيدين! احصل على كوبون خصم من LuxeAura الآن!</h1>
+            <p class="description">متجرنا الفاخر يفتح قريبًا! سجّل رقم الواتس اب الخاص بك لتكون أول من يحصل على عروضنا الحصرية والمنتجات الفاخرة.</p>
+        </div>
+
+        <div class="form-content" id="formContent">
+            <form id="luxeForm">
+                <div class="question">
+                    <label class="question-label">رقم الواتس اب: <span class="required">*</span></label>
+                    <input type="tel" class="input-field" id="whatsapp" required placeholder="966XXXXXXXXX" dir="ltr">
+                </div>
+
+                <div class="question">
+                    <label class="question-label">ما أكثر منتج يهمك؟ (اختياري)</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <span>عباءات فاخرة</span>
+                            <input type="radio" name="product" value="عباءات">
+                        </label>
+                        <label class="radio-option">
+                            <span>شنط أنيقة</span>
+                            <input type="radio" name="product" value="شنط">
+                        </label>
+                        <label class="radio-option">
+                            <span>ساعات راقية</span>
+                            <input type="radio" name="product" value="ساعات">
+                        </label>
+                        <label class="radio-option">
+                            <span>إكسسوارات فاخرة</span>
+                            <input type="radio" name="product" value="إكسسوارات">
+                        </label>
+                        <label class="radio-option">
+                            <span>أخرى</span>
+                            <input type="radio" name="product" value="أخرى" id="otherOption">
+                        </label>
+                    </div>
+                    <div class="other-input" id="otherInput" style="display:none;">
+                        <input type="text" class="input-field" id="otherProduct" placeholder="اكتب نوع المنتج الذي يهمك...">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    انضم لقائمة المستفيدين المبكرين! 🎁
+                </button>
+                
+                <div class="error-message" id="errorMessage"></div>
+            </form>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div class="success-title">🎉 شكرًا لك! 🎉</div>
+            <p class="success-text">أنت الآن من أوائل المستفيدين من عروض LuxeAura الحصرية!</p>
+            <p class="success-text">ترقب رسائلنا للحصول على أفضل العروض والمنتجات الفاخرة.</p>
+        </div>
+    </div>
+
+    <script>
+        // Handle radio button selection
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.radio-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                this.closest('.radio-option').classList.add('selected');
+
+                const otherInput = document.getElementById('otherInput');
+                const otherProductField = document.getElementById('otherProduct');
+                
+                if (this.value === 'أخرى') {
+                    otherInput.style.display = 'block';
+                    setTimeout(() => otherProductField.focus(), 300);
+                } else {
+                    otherInput.style.display = 'none';
+                    otherProductField.value = '';
+                }
+            });
+        });
+
+        // Validate WhatsApp number
+        function validateWhatsApp(number) {
+            const cleaned = number.replace(/[^\d+]/g, '');
+            const regex = /^(\+?[0-9]{10,15})$/;
+            return regex.test(cleaned);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Form submission with AJAX
+        document.getElementById('luxeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const whatsapp = document.getElementById('whatsapp').value.trim();
+            const selectedProduct = document.querySelector('input[name="product"]:checked');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            errorDiv.style.display = 'none';
+            
+            if (!whatsapp) {
+                showError('يرجى إدخال رقم الواتس اب');
+                document.getElementById('whatsapp').focus();
+                return;
+            }
+            
+            if (!validateWhatsApp(whatsapp)) {
+                showError('يرجى إدخال رقم واتس اب صحيح (مثال: 966501234567)');
+                document.getElementById('whatsapp').focus();
+                return;
+            }
+            
+            let productPreference = 'غير محدد';
+            if (selectedProduct) {
+                if (selectedProduct.value === 'أخرى') {
+                    const otherProduct = document.getElementById('otherProduct').value.trim();
+                    productPreference = otherProduct ? `أخرى: ${otherProduct}` : 'أخرى';
+                } else {
+                    productPreference = selectedProduct.value;
+                }
+            }
+            
+            const formData = {
+                timestamp: new Date().toLocaleString('ar-SA', { timeZone: 'Asia/Riyadh' }),
+                whatsapp: whatsapp,
+                product: productPreference,
+                source: 'LuxeAura Landing Page'
+            };
+            
+            submitBtn.innerHTML = 'جاري الحفظ... <span class="loading"></span>';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch("https://formspree.io/f/mjkevnjn", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    document.getElementById('formContent').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                } else {
+                    showError("حدث خطأ أثناء إرسال البيانات، حاول مرة أخرى.");
+                }
+            } catch (error) {
+                console.error("خطأ في الإرسال:", error);
+                showError("تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.");
+            } finally {
+                submitBtn.innerHTML = 'انضم لقائمة المستفيدين المبكرين! 🎁';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
